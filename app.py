@@ -153,7 +153,7 @@ def liars_maze():
     return render_template("liars_maze.html")
 
 
-@app.route("/police")
+@app.route("/police_secret_link")
 def police_mode():
     query = request.args.get("q", "")
     filtered_suspects = SUSPECTS
@@ -168,5 +168,9 @@ def police_mode():
     )
 
 
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  
+    # Берём порт из окружения (если нет — локально используем 5000)
+    app.run(host="0.0.0.0", port=port)
