@@ -51,6 +51,7 @@ GUIDES = [
     {"id": 7, "title": "Список полезных ссылок", "content": "ya.ru - для поиска информации<br>ya.ru/maps - карты<br>ya.ru/images - поиск по картинке<br>https://paintz.app - для онлайн-работы с изображениями<br>https://mp3cut.net/ru - для работы с аудио"},
 ]
 
+
 police = [
     {
         "name": "Якир Дмитрий Сергеевич",
