@@ -1,3 +1,6 @@
 __pycache__/
 *.db
 .env
+venv_clean/
+venv/
+get-pip.py

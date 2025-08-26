@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Лжецы</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="liars-page">
+
+    <div class="overlay">
+        <h1 class="liars-title">Ну привет, <i>детективчики</i> ! Поиграем?)</h1>
+        <form method="POST" class="input-container">
+    <div class="input-wrapper">
+        <input type="text" id="key-input" name="minigame" placeholder="Ваш ключ...">
+        <button type="submit" class="beautiful-btn">
+            <span class="btn-text">Подтвердить</span>
+        </button>
+    </div>
+    {% if error %}
+        <b><p class="error-message">{{ error }}</p></b>
+        {% endif %}
+</form>
+
+        <div class="audio-container">
+            <h2>Мой маленький плейлист ;)</h2>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track1.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track2.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track3.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track4.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track5.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track6.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track7.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track8.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/track9.mp3') }}" type="audio/mpeg">
+                Ваш браузер не поддерживает аудио.
+            </audio>
+        </div>
+    </div>
+
+</body>
+</html>

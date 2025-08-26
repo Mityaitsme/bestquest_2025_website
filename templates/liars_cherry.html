@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cherry Game</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='cherry.css') }}">
+</head>
+<body>
+  <!-- Точки -->
+  <div id="p2" class="number" style="top:20%; left:30%;">2</div>
+  <div id="p1" class="number" style="top:50%; left:80%;">1</div>
+  <div id="p4" class="number" style="top:40%; left:40%;">4</div>
+  <div id="p5" class="number" style="top:25%; left:50%;">5</div>
+  <div id="p3" class="number" style="top:45%; left:60%;">3</div>
+
+  <!-- Объекты -->
+  <img src="{{ url_for('static', filename='liars-pic/cherry_4_2.png') }}" class="object" id="obj1" style="top:10%; left:5%;">
+  <img src="{{ url_for('static', filename='liars-pic/cherry_4_1.png') }}" class="object" id="obj2" style="top:20%; left:5%;">
+  <img src="{{ url_for('static', filename='liars-pic/cherry_3.png') }}" class="object" id="obj3" style="top:30%; left:5%;">
+  <img src="{{ url_for('static', filename='liars-pic/cherry_1.png') }}" class="object" id="obj4" style="top:40%; left:5%;">
+  <img src="{{ url_for('static', filename='liars-pic/cherry_5.png') }}" class="object" id="obj5" style="top:50%; left:5%;">
+  <img src="{{ url_for('static', filename='liars-pic/cherry_2.png') }}" class="object" id="obj6" style="top:60%; left:5%;">
+
+  <!-- Кнопка подсказки -->
+  <button id="hintBtn">?</button>
+
+  <!-- Модалка подсказки -->
+  <div id="hintModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeHint()">&times;</span>
+      <img src="{{ url_for('static', filename='liars-pic/cherry_hint.png') }}" alt="Victory">
+    </div>
+  </div>
+
+  <!-- Модалка победы -->
+  <div id="winModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeWin()">&times;</span>
+      <img src="{{ url_for('static', filename='liars-pic/victory_cherry.png') }}" alt="Victory">
+    </div>
+  </div>
+  <audio id="bgMusic" src="{{ url_for('static', filename='audio/cherry_music.mp3') }}" loop></audio>
+
+  <script>
+    document.body.addEventListener("click", () => {
+  const music = document.getElementById("bgMusic");
+  if (music.paused) {
+    music.play();
+  }
+}, { once: true });
+    const objects = document.querySelectorAll('.object');
+    const points = document.querySelectorAll('.number');
+    const winModal = document.getElementById('winModal');
+    const hintModal = document.getElementById('hintModal');
+    const hintBtn = document.getElementById('hintBtn');
+
+    // условие победы (просто для примера: obj1 → p1, obj2 → p2 ...)
+    const correct = {
+      obj1: "p4",
+      obj2: "p4",
+      obj3: "p3",
+      obj4: "p1",
+      obj5: "p5",
+      obj6: "p2"
+    };
+    let placed = {};
+
+    function openWin() { winModal.style.display = 'flex'; }
+    function closeWin() { winModal.style.display = 'none'; }
+    function openHint() { hintModal.style.display = 'flex'; }
+    function closeHint() { hintModal.style.display = 'none'; }
+    hintBtn.onclick = openHint;
+
+    // --- drag + touch ---
+    objects.forEach(obj => {
+      let offsetX, offsetY, dragging = false;
+
+      function startDrag(e) {
+        dragging = true;
+        obj.classList.add('dragging');
+        let clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+        offsetX = clientX - obj.offsetLeft;
+        offsetY = clientY - obj.offsetTop;
+        e.preventDefault();
+      }
+
+      function onMove(e) {
+        if (!dragging) return;
+        let clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        let clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+        obj.style.left = (clientX - offsetX) + "px";
+        obj.style.top = (clientY - offsetY) + "px";
+      }
+
+      function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        obj.classList.remove('dragging');
+        let ox = obj.offsetLeft + obj.offsetWidth/2;
+        let oy = obj.offsetTop + obj.offsetHeight/2;
+        points.forEach(p => {
+          let px = p.offsetLeft + p.offsetWidth/2;
+          let py = p.offsetTop + p.offsetHeight/2;
+          let dist = Math.hypot(ox - px, oy - py);
+          if (dist < 50) {
+            obj.style.left = (px - obj.offsetWidth/2) + "px";
+            obj.style.top = (py - obj.offsetHeight/2) + "px";
+            placed[obj.id] = p.id;
+          }
+        });
+        checkWin();
+      }
+
+      // мышь
+      obj.addEventListener('mousedown', startDrag);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', endDrag);
+      // сенсор
+      obj.addEventListener('touchstart', startDrag);
+      document.addEventListener('touchmove', onMove);
+      document.addEventListener('touchend', endDrag);
+    });
+
+    function checkWin() {
+      for (let key in correct) {
+        if (placed[key] !== correct[key]) return;
+      }
+      openWin();
+    }
+  </script>
+</body>
+</html>

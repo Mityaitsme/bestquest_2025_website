@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Casino Slot</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='casino.css') }}">
+</head>
+<body>
+
+<div class="slot-machine">
+  <div class="reel" id="reel1"><div class="symbols"></div></div>
+  <div class="reel" id="reel2"><div class="symbols"></div></div>
+  <div class="reel" id="reel3"><div class="symbols"></div></div>
+</div>
+
+<button id="spinBtn">Крутить!</button>
+
+<!-- модалка победы -->
+<div id="winModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeWin()">&times;</span>
+    <img src="{{ url_for('static', filename='liars-pic/casino_victory.png') }}" alt="Victory">
+  </div>
+</div>
+<audio id="bgMusic" src="{{ url_for('static', filename='audio/casino_music.mp3') }}" loop></audio>
+
+<script>
+   document.body.addEventListener("click", () => {
+  const music = document.getElementById("bgMusic");
+  if (music.paused) {
+    music.play();
+  }
+}, { once: true });
+  const SYMBOLS = [
+  "{{ url_for('static', filename='liars-pic/casino_1.png') }}",
+  "{{ url_for('static', filename='liars-pic/casino_2.png') }}",
+  "{{ url_for('static', filename='liars-pic/casino_3.png') }}",
+  "{{ url_for('static', filename='liars-pic/casino_4.png') }}",
+  "{{ url_for('static', filename='liars-pic/casino_5.png') }}"
+  ];
+  const reels = [document.querySelector("#reel1 .symbols"),
+                 document.querySelector("#reel2 .symbols"),
+                 document.querySelector("#reel3 .symbols")];
+  const spinBtn = document.getElementById("spinBtn");
+  const winModal = document.getElementById("winModal");
+
+  // инициализация: кладем по 4 символа в каждый барабан
+  reels.forEach(reel => {
+    SYMBOLS.forEach(sym => {
+      const img = document.createElement("img");
+      img.src = sym;
+      reel.appendChild(img);
+    });
+  });
+
+  function spinReel(reel) {
+    return new Promise(resolve => {
+      let spins = Math.floor(Math.random()*10 + 10); // сколько "шагов"
+      let count = 0;
+      const interval = setInterval(() => {
+        reel.appendChild(reel.firstElementChild); // циклическое прокручивание
+        count++;
+        if (count >= spins) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+  }
+
+  async function spin() {
+    // крутятся все три барабана с разной задержкой
+    await Promise.all(reels.map((r,i) => new Promise(res => setTimeout(() => spinReel(r).then(res), i*200))));
+    checkWin();
+  }
+
+  function checkWin() {
+    const results = reels.map(r => r.firstElementChild.src); // первый символ каждого барабана
+    // победная комбинация: sym1, sym1, sym1
+    if (results.every(s => s.includes("liars-pic/casino_1.png")) || results.every(s => s.includes("liars-pic/casino_2.png")) || results.every(s => s.includes("liars-pic/casino_3.png")) || results.every(s => s.includes("liars-pic/casino_4.png"))  || results.every(s => s.includes("liars-pic/casino_5.png"))) {
+      showWinModal();
+    }
+  }
+
+  function closeWin() { winModal.style.display = "none"; }
+  function showWinModal() {
+  setTimeout(() => {
+    document.getElementById("winModal").style.display = "flex";
+  }, 2000); // 2000 мс = 2 секунды
+  }
+
+  spinBtn.addEventListener("click", spin);
+</script>
+
+</body>
+</html>

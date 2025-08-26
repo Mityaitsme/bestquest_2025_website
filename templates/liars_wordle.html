@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Wordle — Liars</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='wordle.css') }}">
+</head>
+<body>
+  <h1>Wordle</h1>
+  <div id="board"></div>
+  <p id="message"></p>
+
+  <div id="keyboard"></div>
+
+  <div id="victoryModal" class="vmodal" aria-hidden="true">
+  <div class="vmodal-content">
+    <button class="vmodal-close" aria-label="Закрыть">&times;</button>
+    <img id="victoryImage" src="" alt="victory frame">
+  </div>
+</div>
+
+  <script>
+    let VALID_WORDS = new Set();
+
+  // Загружаем файл
+  fetch('/static/words.txt')
+    .then(resp => resp.text())
+    .then(text => {
+      text.split(/\r?\n/).forEach(w => {
+        if (w.length === 5) {
+          VALID_WORDS.add(w.toUpperCase());
+        }
+      });
+    });
+
+    const ANSWER = "PEGAS"; 
+    const COLS = 5;
+
+    const board = document.getElementById("board");
+    const message = document.getElementById("message");
+    const keyboard = document.getElementById("keyboard");
+
+    let currentRow = [];
+    let currentCol = 0;
+    let gameOver = false;
+
+    // создать первую строку
+    addNewRow();
+
+    // виртуальная клавиатура
+    const KEYS = [
+      "QWERTYUIOP",
+      "ASDFGHJKL",
+      "ZXCVBNM"
+    ];
+
+    KEYS.forEach(row => {
+      const rowDiv = document.createElement("div");
+      rowDiv.classList.add("key-row");
+      row.split("").forEach(k => {
+        const key = document.createElement("button");
+        key.textContent = k;
+        key.classList.add("key");
+        key.onclick = () => handleKey(k);
+        rowDiv.appendChild(key);
+      });
+      keyboard.appendChild(rowDiv);
+    });
+
+    // Enter
+    const enterKey = document.createElement("button");
+    enterKey.textContent = "Enter";
+    enterKey.classList.add("key", "wide");
+    enterKey.onclick = () => handleKey("Enter");
+
+    // Backspace
+    const backKey = document.createElement("button");
+    backKey.textContent = "⌫";
+    backKey.classList.add("key", "wide");
+    backKey.onclick = () => handleKey("Backspace");
+
+    const lastRow = document.createElement("div");
+    lastRow.classList.add("key-row");
+    lastRow.appendChild(enterKey);
+    lastRow.appendChild(backKey);
+    keyboard.appendChild(lastRow);
+
+    // обработка нажатий
+    document.addEventListener("keydown", (e) => {
+      if (/^[a-zA-Z]$/.test(e.key)) handleKey(e.key.toUpperCase());
+      else if (e.key === "Enter") handleKey("Enter");
+      else if (e.key === "Backspace") handleKey("Backspace");
+    });
+
+    function handleKey(key) {
+      if (gameOver) return;
+
+      if (key === "Backspace") {
+        if (currentCol > 0) {
+          currentCol--;
+          currentRow[currentCol].textContent = "";
+        }
+      } else if (key === "Enter") {
+        if (currentCol === COLS) {
+          checkWord();
+        }
+      } else if (/^[A-Z]$/.test(key)) {
+        if (currentCol < COLS) {
+          currentRow[currentCol].textContent = key;
+          currentCol++;
+        }
+      }
+    }
+
+    function checkWord() {
+      let guess = "";
+      message.textContent = "";
+      for (let c = 0; c < COLS; c++) {
+        guess += currentRow[c].textContent;
+      }
+
+      if (guess.length !== COLS) return;
+
+      if (!VALID_WORDS.has(guess)) {
+        message.textContent = "Слово не найдено в словаре";
+        return;
+      }
+
+      const answerArr = ANSWER.split("");
+      const guessArr = guess.split("");
+
+      // сначала зелёные
+      for (let c = 0; c < COLS; c++) {
+        if (guessArr[c] === answerArr[c]) {
+          currentRow[c].classList.add("correct");
+          answerArr[c] = null;
+          guessArr[c] = "*";
+        }
+      }
+
+      // затем жёлтые/серые
+      for (let c = 0; c < COLS; c++) {
+        if (guessArr[c] !== "*") {
+          const idx = answerArr.indexOf(guessArr[c]);
+          if (idx !== -1) {
+            currentRow[c].classList.add("present");
+            answerArr[idx] = null;
+          } else {
+            currentRow[c].classList.add("absent");
+          }
+        }
+      }
+
+      if (guess === ANSWER) {
+        gameOver = true;
+        setTimeout(showVictoryModal, 2000);
+        return;
+      }
+
+      // новая строка
+      addNewRow();
+    }
+
+    function addNewRow() {
+      const row = [];
+      const rowDiv = document.createElement("div");
+      rowDiv.classList.add("row");
+      for (let c = 0; c < COLS; c++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        rowDiv.appendChild(cell);
+        row.push(cell);
+      }
+      board.appendChild(rowDiv);
+      currentRow = row;
+      currentCol = 0;
+    }
+    const VICTORY_FRAMES = [
+  "{{ url_for('static', filename='liars-pic/pegas_1.png') }}",
+  "{{ url_for('static', filename='liars-pic/pegas_2.png') }}",
+  "{{ url_for('static', filename='liars-pic/pegas_3.png') }}",
+  "{{ url_for('static', filename='liars-pic/pegas_4.png') }}",
+  "{{ url_for('static', filename='liars-pic/pegas_5.png') }}",
+  "{{ url_for('static', filename='liars-pic/pegas_6.png') }}"
+];
+
+// --- модалка победы ---
+const modalEl  = document.getElementById('victoryModal');
+const imgEl    = document.getElementById('victoryImage');
+const closeBtn = modalEl.querySelector('.vmodal-close');
+
+function showVictoryModal() {
+  let i = 0;
+
+  // прячем картинку до загрузки кадра, сбрасываем src
+  imgEl.style.display = 'none';
+  imgEl.removeAttribute('src');
+
+  modalEl.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  const advance = () => {
+    if (i >= VICTORY_FRAMES.length) return;
+    imgEl.style.display = 'none';
+    imgEl.onload = () => { imgEl.style.display = 'block'; };
+    imgEl.src = VICTORY_FRAMES[i++];
+    if (i < VICTORY_FRAMES.length) {
+      setTimeout(advance, 1000);
+    }
+  };
+  advance();
+}
+
+function closeVictoryModal() {
+  modalEl.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// закрытие по крестику
+closeBtn.addEventListener('click', closeVictoryModal);
+// закрытие по клику на фон
+modalEl.addEventListener('click', (e) => {
+  if (e.target === modalEl) closeVictoryModal();
+});
+// закрытие по крестику и по клику по фону
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('victoryModal');
+  if (e.target.classList.contains('vmodal-close') || e.target === modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+});
+  </script>
+</body>
+</html>

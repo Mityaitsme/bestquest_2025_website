@@ -1,0 +1,161 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+#board {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 50px);
+  gap: 5px;
+  justify-content: center;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: white;
+}
+
+.correct {
+  background-color: #6aaa64;
+  color: white;
+}
+
+.present {
+  background-color: #c9b458;
+  color: white;
+}
+
+.absent {
+  background-color: #787c7e;
+  color: white;
+}
+
+#message {
+  margin: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#keyboard {
+  margin-top: 20px;
+}
+
+.key-row {
+  display: flex;
+  justify-content: center;
+  margin: 5px 0;
+}
+
+.key {
+  margin: 2px;
+  padding: 10px;
+  min-width: 30px;
+  border: none;
+  border-radius: 5px;
+  background: #d3d6da;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.key.wide {
+  min-width: 60px;
+}
+
+.key:active {
+  background: #999;
+}
+
+
+/* ===== Победная модалка для Wordle ===== */
+.vmodal {
+  display: none;                /* скрыто по умолчанию */
+  position: fixed;
+  inset: 0;                     /* top:0;right:0;bottom:0;left:0 */
+  background: rgba(0,0,0,0.8);  /* затемнение фона */
+  z-index: 2000;
+  justify-content: center;      /* центрируем по горизонтали */
+  align-items: center;          /* центрируем по вертикали */
+}
+
+.vmodal.show {
+  display: flex;                /* показываем и включаем центровку */
+}
+
+.vmodal-content {
+  position: relative;
+  width: 92vw;                  /* почти во всю ширину на телефоне */
+  max-width: 810px;             /* УВЕЛИЧЕНО с 540px до 810px (в 1.5 раза) */
+  max-height: 90vh;
+  background: #000;             /* фон под кадры */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.vmodal-content img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  object-fit: contain;          /* сохраняем пропорции */
+}
+
+.vmodal-close {
+  position: absolute;
+  top: 12px;                    /* Немного увеличили отступ */
+  right: 15px;                  /* Немного увеличили отступ */
+  font-size: 32px;              /* Увеличили размер крестика */
+  line-height: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px 12px;            /* Увеличили область клика */
+  z-index: 1001;                /* Чтобы был поверх изображения */
+}
+
+.vmodal-close:active,
+.vmodal-close:hover {
+  opacity: 0.8;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 900px) {
+  .vmodal-content {
+    max-width: 95vw;            /* На мобильных почти на весь экран */
+  }
+}
+
+@media (max-width: 600px) {
+  .vmodal-content {
+    max-width: 98vw;
+    border-radius: 8px;
+  }
+  
+  .vmodal-close {
+    top: 8px;
+    right: 10px;
+    font-size: 28px;
+    padding: 4px 8px;
+  }
+}

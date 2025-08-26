@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Maze</title>
+  <link rel="stylesheet" href="/static/maze.css">
+</head>
+<body>
+
+  <canvas id="mazeCanvas"></canvas>
+
+  <div id="controls">
+  <button id="upBtn">↑</button>
+  <div>
+    <button id="leftBtn">←</button>
+    <button id="randomBtn"></button>
+    <button id="rightBtn">→</button>
+  </div>
+  <button id="downBtn">↓</button>
+  <audio id="bgMusic" src="{{ url_for('static', filename='audio/maze_music.mp3') }}" loop></audio>
+</div>
+
+  <!-- Победное окно -->
+<div id="victoryModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img src="{{ url_for('static', filename='liars-pic/maze_victory.png') }}" alt="Victory">
+    </div>
+</div>
+
+  <script src="/static/maze.js"></script>
+</body>
+</html>

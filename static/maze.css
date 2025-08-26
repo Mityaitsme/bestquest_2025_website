@@ -1,0 +1,113 @@
+body {
+  margin: 0;
+  background: url("../static/liars-bg.jpg") no-repeat center center fixed;
+  background-size: cover; /* ← Добавьте эту строку */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+canvas {
+  border: 2px solid white;
+  margin-bottom: 20px;
+}
+
+#controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+#controls div {
+  display: flex;
+  gap: 5px;
+}
+
+button {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  border-radius: 10px;
+  border: none;
+  background: #333;
+  color: white;
+}
+
+/* Добавьте эти стили в ваш maze.css */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 90vw; /* Максимальная ширина 90% от ширины экрана */
+    max-height: 90vh; /* Максимальная высота 90% от высоты экрана */
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-content img {
+    max-width: 100%; /* Изображение не превышает ширину контейнера */
+    max-height: 80vh; /* Максимальная высота изображения */
+    height: auto;
+    object-fit: contain; /* Сохраняет пропорции изображения */
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 95vw;
+        max-height: 95vh;
+        padding: 15px;
+    }
+    
+    .close {
+        top: 5px;
+        right: 10px;
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        max-width: 98vw;
+        max-height: 98vh;
+        padding: 10px;
+    }
+    
+    .modal-content img {
+        max-height: 85vh;
+    }
+}

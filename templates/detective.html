@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Детектив</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>Добро пожаловать на домашнюю страницу, детектив!</h1>
+
+<h2>Досье подозреваемых</h2>
+
+<div class="search-container">
+    <input type="text" id="detectiveSearchInput" placeholder="Введите ключевое слово...">
+    <button onclick="filterSuspectCards()">Поиск</button>
+</div>
+
+<div class="cards-container" id="detectiveSuspectCards">
+    {% for s in suspects %}
+    <div class="card suspect-card" 
+         onclick="openModal('{{ s.name }}', '{{ s.description }}', 'suspect')"
+         data-description="{{ s.description }}">
+        <i class="fas fa-user"></i>
+        <h3>{{ s.name }}</h3>
+    </div>
+    {% endfor %}
+</div>
+
+<h2>Памятки</h2>
+<div class="cards-container">
+    {% for g in guides %}
+    <div class="card guide-card" onclick="openModal('{{ g.title }}', '{{ g.content }}', 'guide')">
+        <i class="fas fa-book"></i>
+        <h3>{{ g.title }}</h3>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Модальное окно -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-desc"></p>
+    </div>
+</div>
+
+<script>
+function openModal(title, desc, type) {
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-desc').innerHTML = desc;
+    document.getElementById('modal').style.display = "block";
+    if(type === 'suspect') {
+        document.querySelector('.modal-content').style.borderTop = "5px solid #e74c3c";
+    } else {
+        document.querySelector('.modal-content').style.borderTop = "5px solid #3498db";
+    }
+}
+
+function closeModal() {
+    document.getElementById('modal').style.display = "none";
+}
+
+function filterSuspectCards() {
+    const keyword = document.getElementById('detectiveSearchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('#detectiveSuspectCards .card');
+    cards.forEach(card => {
+        const desc = card.getAttribute('data-description').toLowerCase();
+        card.style.display = desc.includes(keyword) ? 'block' : 'none';
+    });
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+document.getElementById('detectiveSearchInput').addEventListener('input', filterSuspectCards);
+</script>
+
+</body>
+</html>
