@@ -34,8 +34,8 @@ body {
       position: fixed;
       top: 10px;
       right: 10px;
-      background: #444;
-      color: white;
+      background: #ee0202;
+      color: rgb(178, 197, 202);
       border: none;
       border-radius: 50%;
       width: 40px;
